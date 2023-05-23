@@ -98,34 +98,36 @@ public class HashtableClosedAddressImpl<T> extends
 
 	@Override
 	public T search(T element) {
-		HashFunctionClosedAddress<T> hashFunction = (HashFunctionClosedAddress<T>) this.getHashFunction();
-		int hash = hashFunction.hash(element);
-		
-		LinkedList<T> elements = (LinkedList<T>) this.table[hash];
-		
-		if (elements == null) {
-			return null;
-		} else {
-			if (elements.contains(element)) {
-				return element;
-			} else {
-				return null;
+		T result = null;
+		if (element != null) {
+			HashFunctionClosedAddress<T> hashFunction = (HashFunctionClosedAddress<T>) this.getHashFunction();
+			int hash = hashFunction.hash(element);
+			
+			LinkedList<T> elements = (LinkedList<T>) this.table[hash];
+			
+			if (elements != null) {
+				if (elements.contains(element)) {
+					result = element;
+				}
 			}
 		}
+		return result;
 	}
 
 	@Override
 	public int indexOf(T element) {
 		int index = -1;
 		
-		HashFunctionClosedAddress<T> hashFunction = (HashFunctionClosedAddress<T>) this.getHashFunction();
-		int hash = hashFunction.hash(element);
-		
-		LinkedList<T> elements = (LinkedList<T>) this.table[hash];
-		
-		if (elements != null) {
-			if (elements.contains(element)) {
-				index = hash;
+		if (element != null) {
+			HashFunctionClosedAddress<T> hashFunction = (HashFunctionClosedAddress<T>) this.getHashFunction();
+			int hash = hashFunction.hash(element);
+			
+			LinkedList<T> elements = (LinkedList<T>) this.table[hash];
+			
+			if (elements != null) {
+				if (elements.contains(element)) {
+					index = hash;
+				}
 			}
 		}
 		return index;

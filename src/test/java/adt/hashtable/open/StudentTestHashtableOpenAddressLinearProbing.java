@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import adt.hashtable.closed.HashtableClosedAddressImpl;
 import adt.hashtable.hashfunction.HashFunctionClosedAddressMethod;
 import adt.hashtable.open.AbstractHashtableOpenAddress;
 import adt.hashtable.open.HashtableElement;
@@ -56,6 +57,54 @@ public class StudentTestHashtableOpenAddressLinearProbing {
 		assertEquals(0, table2.getCOLLISIONS());
 
 	}
+	
+	@Test
+	public void testInsertAtDeleted() {
+		table1.remove(new HashtableElement(4)); // table[4] é D
+
+		table1.insert(new HashtableElement(13)); // 2->3->D
+		assertEquals(4, table1.indexOf(new HashtableElement(13)));
+		assertEquals(4, table1.size());
+
+	}
+	
+	@Test(expected = HashtableOverflowException.class)
+	public void testOverflow() throws HashtableOverflowException {
+		HashtableOpenAddressLinearProbingImpl<HashtableElement> hashTableEx = 
+				new HashtableOpenAddressLinearProbingImpl<HashtableElement>(
+				10,
+				HashFunctionClosedAddressMethod.DIVISION
+				);
+		
+		for (int i = 0; i < 10; i++) {
+			hashTableEx.insert(new HashtableElement(i));
+		}
+		
+		assertEquals(0, hashTableEx.getCOLLISIONS());
+		assertEquals(0, hashTableEx.indexOf(new HashtableElement(0)));
+		assertEquals(9, hashTableEx.indexOf(new HashtableElement(9)));
+		assertTrue(hashTableEx.isFull());
+		hashTableEx.insert(new HashtableElement(10));
+	}
+	
+	@Test(expected = HashtableOverflowException.class)
+	public void testOverflowWithProbing() throws HashtableOverflowException {
+		HashtableOpenAddressLinearProbingImpl<HashtableElement> hashTableEx = 
+				new HashtableOpenAddressLinearProbingImpl<HashtableElement>(
+				10,
+				HashFunctionClosedAddressMethod.DIVISION
+				);
+		
+		for (int i = 0; i < 10; i++) {
+			hashTableEx.insert(new HashtableElement(i));
+		}
+		
+		assertEquals(0, hashTableEx.getCOLLISIONS());
+		assertEquals(0, hashTableEx.indexOf(new HashtableElement(0)));
+		assertEquals(9, hashTableEx.indexOf(new HashtableElement(9)));
+		assertTrue(hashTableEx.isFull());
+		hashTableEx.insert(new HashtableElement(72)); // index 6
+	}
 
 	@Test
 	public void testRemove() {
@@ -67,13 +116,153 @@ public class StudentTestHashtableOpenAddressLinearProbing {
 		assertNull(table1.search(new HashtableElement(5)));
 
 	}
+	
+	@Test
+	public void testRemoveACollision() {
+		// 3: 3 != 14
+		// 4: 4 != 14
+		// 5: 5 != 14
+		table1.remove(new HashtableElement(14));
+		assertEquals(4, table1.size());
 
+	}
+	
+	
+	@Test
+	public void testRemoveInexistentInFullTable() {
+		// 3: 3 != 14
+		// 4: 4 != 14
+		// 5: 5 != 14
+		// 6: 6 != 14
+		// 7: 7 != 14
+		// 8: 8 != 14
+		// 9: 9 != 14
+		table1.insert(new HashtableElement(6));
+		table1.insert(new HashtableElement(7));
+		table1.insert(new HashtableElement(8));
+		table1.insert(new HashtableElement(9));
+		table1.remove(new HashtableElement(14));
+		assertEquals(8, table1.size());
+
+	}
+	
+	@Test
+	public void testRemoveInexistentLastElementIsDeleted() {
+		// 3: 3 != 14
+		// 4: 4 != 14
+		// 5: 5 != 14
+		// 6: 6 != 14
+		// 7: 7 != 14
+		// 8: 8 != 14
+		// 9: 9 != 14
+		table1.insert(new HashtableElement(6));
+		table1.insert(new HashtableElement(7));
+		table1.insert(new HashtableElement(8));
+		table1.insert(new HashtableElement(9));
+		table1.remove(new HashtableElement(9));
+		assertEquals(7, table1.size());
+		table1.remove(new HashtableElement(14));
+		assertEquals(7, table1.size());
+
+	}
+	
+	@Test
+	public void testRemoveDespiteDeleted() {
+		table1.insert(new HashtableElement(13));
+		table1.remove(new HashtableElement(4));
+		assertEquals(4, table1.size());
+		table1.remove(new HashtableElement(13)); // 2->3->D->5->13
+		assertEquals(3, table1.size());
+	}
+	
+	@Test
+	public void testRemoveWithDeletedAtLast() {
+		table1.insert(new HashtableElement(15));
+		table1.insert(new HashtableElement(16));
+		table1.insert(new HashtableElement(16));
+		table1.insert(new HashtableElement(13));
+		table1.remove(new HashtableElement(13));
+		assertEquals(7, table1.size());
+		table1.remove(new HashtableElement(14)); // 2->3->4->5->15->16->16->D
+		assertEquals(7, table1.size()); // não removeu nada
+	}
+	
 	@Test
 	public void testSearch() {
 		assertEquals(new HashtableElement(5),
 				table1.search(new HashtableElement(5))); // elemento que existe
 		assertNull(table1.search(new HashtableElement(15))); // elemento que nao
 																// existe
+	}
+	
+	@Test
+	public void testSearchWithProbing() {
+		table1.insert(new HashtableElement(5));
+		table1.insert(new HashtableElement(16));
+		assertEquals(new HashtableElement(16),
+				table1.search(new HashtableElement(16))); // hash(16) == 5
+	}
+	
+	@Test
+	public void testStopSearchingAtNull() {
+		assertNull(table1.search(new HashtableElement(13))); // 2->3->4->5->null
+	}
+	
+	@Test
+	public void testSearchDespiteDeleted() {
+		HashtableElement value = new HashtableElement(13);
+		table1.insert(value);
+		table1.remove(new HashtableElement(4));
+		assertEquals(value, table1.search(value)); // 2->3->D->5->13
+	}
+	
+	@Test
+	public void testSearchWithDeletedAtLast() {
+		table1.insert(new HashtableElement(15));
+		table1.insert(new HashtableElement(16));
+		table1.insert(new HashtableElement(16));
+		table1.insert(new HashtableElement(13));
+		table1.remove(new HashtableElement(13));
+		assertNull(table1.search(new HashtableElement(14))); // 2->3->4->5->15->16->16->D
+	}
+	
+	
+	@Test
+	public void testIndexOf() {
+		assertEquals(5,
+				table1.indexOf(new HashtableElement(5))); // elemento que existe
+		assertEquals(-1, table1.indexOf(new HashtableElement(15))); // elemento que nao
+																// existe
+	}
+	
+	@Test
+	public void testIndexOfWithProbing() {
+		table1.insert(new HashtableElement(5));
+		table1.insert(new HashtableElement(16));
+		assertEquals(7, table1.indexOf(new HashtableElement(16))); // hash(16) == 5
+	}
+	
+	@Test
+	public void testStopSearchingIndexOfAtNull() {
+		assertEquals(-1, table1.indexOf(new HashtableElement(13))); // 2->3->4->5->null
+	}
+	
+	@Test
+	public void testIndexOfDespiteDeleted() {
+		HashtableElement value = new HashtableElement(13);
+		table1.insert(value);
+		table1.remove(new HashtableElement(4));
+		assertEquals(6, table1.indexOf(value)); // 2->3->D->5->13
+	}
+	
+	@Test
+	public void testIndexOfWithDeletedAtLast() {
+		table1.insert(new HashtableElement(15));
+		table1.insert(new HashtableElement(16));
+		table1.insert(new HashtableElement(16));
+		table1.insert(new HashtableElement(13));
+		table1.remove(new HashtableElement(13));
+		assertEquals(-1, table1.indexOf(new HashtableElement(14))); // 2->3->4->5->15->16->16->D
 	}
 
 	@Test

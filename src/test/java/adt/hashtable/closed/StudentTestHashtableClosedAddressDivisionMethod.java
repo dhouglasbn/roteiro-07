@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import adt.hashtable.hashfunction.HashFunctionClosedAddressMethod;
+import adt.hashtable.open.HashtableOverflowException;
 
 public class StudentTestHashtableClosedAddressDivisionMethod {
 
@@ -56,17 +57,76 @@ public class StudentTestHashtableClosedAddressDivisionMethod {
 		assertEquals(currentSize - 1, table1.size());
 		assertEquals(-1, table1.indexOf(200));
 	}
+	
+	@Test
+	public void testRemoveInexisstentElement() {
+		int currentSize = table1.size();
+		table1.remove(9); // elemento existente
+		assertEquals(currentSize, table1.size());
+		assertEquals(-1, table1.indexOf(2));
+	}
 
 	@Test
 	public void testSearch() {
-		// busca um elemento inexistente. compara a posicao
-		assertNull(table1.search(100));
-		assertEquals(-1, table1.indexOf(100));
 
 		// busca um elemento existente. compara a posicao
 		assertEquals(new Integer(305), table1.search(305));
+
+	}
+	
+	@Test
+	public void testSearchInAList() {
+
+		// busca um elemento existente. compara a posicao
+		table1.insert(9);
+		table1.insert(110);
+		table1.insert(211);
+		table1.insert(312);
+		assertEquals(new Integer(211), table1.search(211));
+
+	}
+
+	@Test
+	public void testSearchInexistentElement() {
+		// busca um elemento inexistente. compara a posicao
+		assertNull(table1.search(100));
+	}
+	
+	@Test
+	public void testSearchNullElement() {
+		assertNull(table1.search(null));
+	}
+	
+	
+	@Test
+	public void testIndexOf() {
+
+		// busca um elemento existente. compara a posicao
 		assertEquals(2, table1.indexOf(305));
 
+	}
+	
+	@Test
+	public void testIndexOfInAList() {
+
+		// busca um elemento existente. compara a posicao
+		table1.insert(9);
+		table1.insert(110);
+		table1.insert(211);
+		table1.insert(312);
+		assertEquals(9, table1.indexOf(211));
+
+	}
+
+	@Test
+	public void testIndefOfInexistentElement() {
+		// busca um elemento inexistente. compara a posicao
+		assertEquals(-1, table1.indexOf(100));
+	}
+	
+	@Test
+	public void testIndexOfNullElement() {
+		assertEquals(-1, table1.indexOf(null));
 	}
 
 	@Test
