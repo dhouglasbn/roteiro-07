@@ -69,33 +69,66 @@ public class HashtableClosedAddressImpl<T> extends
 		HashFunctionClosedAddress<T> hashFunction = (HashFunctionClosedAddress<T>) this.getHashFunction();
 		int hash = hashFunction.hash(element);
 		
-		LinkedList<T> elements = (LinkedList<T>) this.table[hash];
+		LinkedList<T> list = (LinkedList<T>) this.table[hash];
 		
-		if (elements == null) {
-			elements = new LinkedList<T>();
-			elements.add(element);
-			this.table[hash] = elements;
+		if (list == null) {
+			list = new LinkedList<T>();
+			list.addFirst(element);
+			this.table[hash] = list;
+			this.elements++;
 		} else {
-			elements.addLast(element);
+			list.addLast(element);
+			this.COLLISIONS++;
+			this.elements++;
 		}
 	}
 
 	@Override
 	public void remove(T element) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Not implemented yet!");
+		HashFunctionClosedAddress<T> hashFunction = (HashFunctionClosedAddress<T>) this.getHashFunction();
+		int hash = hashFunction.hash(element);
+		
+		LinkedList<T> list = (LinkedList<T>) this.table[hash];
+		
+		if (list != null) {
+			list.remove(element);
+			this.elements--;
+		}
 	}
 
 	@Override
 	public T search(T element) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Not implemented yet!");
+		HashFunctionClosedAddress<T> hashFunction = (HashFunctionClosedAddress<T>) this.getHashFunction();
+		int hash = hashFunction.hash(element);
+		
+		LinkedList<T> elements = (LinkedList<T>) this.table[hash];
+		
+		if (elements == null) {
+			return null;
+		} else {
+			if (elements.contains(element)) {
+				return element;
+			} else {
+				return null;
+			}
+		}
 	}
 
 	@Override
 	public int indexOf(T element) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Not implemented yet!");
+		int index = -1;
+		
+		HashFunctionClosedAddress<T> hashFunction = (HashFunctionClosedAddress<T>) this.getHashFunction();
+		int hash = hashFunction.hash(element);
+		
+		LinkedList<T> elements = (LinkedList<T>) this.table[hash];
+		
+		if (elements != null) {
+			if (elements.contains(element)) {
+				index = hash;
+			}
+		}
+		return index;
 	}
 
 }

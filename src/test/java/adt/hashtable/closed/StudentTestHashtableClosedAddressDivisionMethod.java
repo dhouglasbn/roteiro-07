@@ -5,8 +5,6 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import adt.hashtable.closed.AbstractHashtableClosedAddress;
-import adt.hashtable.closed.HashtableClosedAddressImpl;
 import adt.hashtable.hashfunction.HashFunctionClosedAddressMethod;
 
 public class StudentTestHashtableClosedAddressDivisionMethod {
@@ -45,7 +43,7 @@ public class StudentTestHashtableClosedAddressDivisionMethod {
 		assertEquals(1, table1.getCOLLISIONS());
 		assertEquals(0, table1.indexOf(101));
 
-		table2.insert(103); // nao produz colisao inserindo 1 elemento na talbe
+		table2.insert(103); // nao produz colisao inserindo 1 elemento na table
 							// vazia
 		assertEquals(0, table2.getCOLLISIONS());
 		assertEquals(2, table2.indexOf(103));
