@@ -31,7 +31,7 @@ public class HashtableOpenAddressQuadraticProbingImpl<T extends Storable>
 				break;
 			} else {
 				this.COLLISIONS++;
-				if (probing >= this.capacity() - 1) {
+				if (probing >= this.capacity()) {
 					// resolver a dúvida dos collisions contados no overflow
 					throw new HashtableOverflowException();
 				}
@@ -58,7 +58,7 @@ public class HashtableOpenAddressQuadraticProbingImpl<T extends Storable>
 			if (item == null) {
 				break;
 			}
-			if (probing >= this.capacity() - 1) {
+			if (probing >= this.capacity()) {
 				break;
 			}
 		}
@@ -86,7 +86,7 @@ public class HashtableOpenAddressQuadraticProbingImpl<T extends Storable>
 			if (item == null) {
 				break;
 			}
-			if (probing >= this.capacity() - 1) {
+			if (probing >= this.capacity()) {
 				break;
 			}
 		}
@@ -116,7 +116,7 @@ public class HashtableOpenAddressQuadraticProbingImpl<T extends Storable>
 			if (item == null) {
 				break;
 			}
-			if (probing >= this.capacity() - 1) {
+			if (probing >= this.capacity()) {
 				break;
 			}
 		}
